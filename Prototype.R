@@ -4,6 +4,7 @@ library(tidyverse)
 
 
 files <- list.files(pattern="\\.xlsx$",full.names = TRUE)
+
 #Cleaning on State Data
 year <- 2008
 state.list <- list()
@@ -144,4 +145,5 @@ state.list[["mmg_2019"]] <- state.list[["mmg_2019"]] |>
                                    `Weighted Annual Food Budget Shortfall` = as.character(`Weighted Annual Food Budget Shortfall`))
 
 state <- state.list |> reduce(full_join)
+write.csv(state, file = "MMG_State.csv")
 
