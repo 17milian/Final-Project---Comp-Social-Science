@@ -147,5 +147,54 @@ state <- state.list |> reduce(full_join)
 write.csv(state, file = "MMG_State.csv")
 
 #Cleaning on County Data
+year <- 2008
+county.list <- list()
+for (file in files) {
+  year <- year + 1
+  if (year %in% c(2009, 2010, 2019)) {
+    county.list[[str_c("mmg_",year)]] <- read_excel(file, 
+                                                   sheet = "County",
+                                                   na = c("", "n/a")) |>
+      mutate(Year = year)
+  } else if (year == 2018) {
+    state.list[[str_c("mmg_",year)]] <- read_excel(file, 
+                                                   sheet = str_c(year, " County"),
+                                                   skip = 1,
+                                                   na = c("", "n/a")) |>
+      mutate(Year = year)
+  } else {
+    county.list[[str_c("mmg_",year)]] <- read_excel(file, 
+                                                   sheet = str_c(year, " County"),
+                                                   na = c("", "n/a")) |>
+      mutate(Year = year)
+  }
+}
 
 #Cleaning on District Data
+year <- 2008
+district.list <- list()
+for (file in files) {
+  year <- year + 1
+  if (year == 2009) {
+    district.list[[str_c("mmg_",year)]] <- read_excel(file, 
+                                                    sheet = "Congressional_district",
+                                                    na = c("", "n/a")) |>
+                                         mutate(Year = year)
+  } else if (year %in% c(2010, 2019)) {
+    district.list[[str_c("mmg_",year)]] <- read_excel(file, 
+                                                   sheet = "Congressional District",
+                                                   na = c("", "n/a")) |>
+                                        mutate(Year = year)
+  } else if (year == 2018) {
+    district.list[[str_c("mmg_",year)]] <- read_excel(file, 
+                                                   sheet = str_c(year, " Cong District"),
+                                                   skip = 1, 
+                                                   na = c("", "n/a")) |>
+                                        mutate(Year = year)
+  } else {
+    district.list[[str_c("mmg_",year)]] <- read_excel(file, 
+                                                    sheet = str_c(year, " Cong District"),
+                                                    na = c("", "n/a")) |>
+                                         mutate(Year = year)
+  }
+}
