@@ -146,3 +146,6 @@ state.list[["mmg_2019"]] <- state.list[["mmg_2019"]] |>
 state <- state.list |> reduce(full_join)
 write.csv(state, file = "MMG_State.csv")
 
+#Cleaning on County Data
+
+#Cleaning on District Data
