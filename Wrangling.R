@@ -151,6 +151,10 @@ state.list[["mmg_2019"]] <- state.list[["mmg_2019"]] |>
 state <- state.list |> reduce(full_join)
 write.csv(state, file = "MMG_State.csv")
 
+fi_state <- state |> 
+            select(`State Name`, Year, `Food Insecurity Rate`) |> 
+            pivot_wider(names_from = Year, values_from = `Food Insecurity Rate`)
+
 #Cleaning on County Data
 year <- 2008
 county.list <- list()
@@ -354,6 +358,11 @@ county.list[["mmg_2019"]] <- county.list[["mmg_2019"]] |>
 county <- county.list |> reduce(full_join)
 write.csv(county, file = "MMG_County.csv")
 
+fi_county <- county |> 
+             select(`County, State`, Year, `Food Insecurity Rate`) |>
+             pivot_wider(names_from = Year,
+                         values_from = `Food Insecurity Rate`)
+
 
 #Cleaning on District Data
 year <- 2008
@@ -365,7 +374,7 @@ for (file in files) {
                                                     sheet = "Congressional_district",
                                                     na = c("", "n/a")) |>
                                          mutate(Year = year)
-  } else if (year %in% c(2010, 2019)) {
+  } else if (year %in% 2010) {
     district.list[[str_c("mmg_",year)]] <- read_excel(file, 
                                                    sheet = "Congressional District",
                                                    na = c("", "n/a")) |>
@@ -376,6 +385,10 @@ for (file in files) {
                                                    skip = 1, 
                                                    na = c("", "n/a")) |>
                                         mutate(Year = year)
+  } else if (year == 2019) {
+    district.list[[str_c("mmg_",year)]] <- read_excel(file, 
+                                                      sheet = "Congressional District", 
+                                                      na = c("", "n/a"))
   } else {
     district.list[[str_c("mmg_",year)]] <- read_excel(file, 
                                                     sheet = str_c(year, " Cong District"),
