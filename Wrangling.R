@@ -149,12 +149,12 @@ state.list[["mmg_2019"]] <- state.list[["mmg_2019"]] |>
          `Weighted Annual Food Budget Shortfall` = as.character(`Weighted Annual Food Budget Shortfall`))
 
 state <- state.list |> reduce(full_join)
-write.csv(state, file = "MMG_State.csv")
+write.csv(state, file = "MMG_State.csv", row.names = FALSE)
 
 fi_state <- state |> 
             select(`State Name`, Year, `Food Insecurity Rate`) |> 
             pivot_wider(names_from = Year, values_from = `Food Insecurity Rate`)
-write.csv(fi_state, "FI_State.csv")
+write.csv(fi_state, "FI_State.csv", row.names = FALSE)
 
 #Cleaning on County Data
 year <- 2008
@@ -357,13 +357,13 @@ county.list[["mmg_2019"]] <- county.list[["mmg_2019"]] |>
                                     `Weighted Annual Food Budget Shortfall` = as.character(`Weighted Annual Food Budget Shortfall`))
 
 county <- county.list |> reduce(full_join)
-write.csv(county, file = "MMG_County.csv")
+write.csv(county, file = "MMG_County.csv", row.names = FALSE)
 
 fi_county <- county |> 
              select(`County, State`, Year, `Food Insecurity Rate`) |>
              pivot_wider(names_from = Year,
                          values_from = `Food Insecurity Rate`)
-write.csv(fi_county, "FI_County.csv")
+write.csv(fi_county, "FI_County.csv", row.names = FALSE)
 
 
 #Cleaning on District Data
