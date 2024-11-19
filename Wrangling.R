@@ -154,6 +154,7 @@ write.csv(state, file = "MMG_State.csv")
 fi_state <- state |> 
             select(`State Name`, Year, `Food Insecurity Rate`) |> 
             pivot_wider(names_from = Year, values_from = `Food Insecurity Rate`)
+write.csv(fi_state, "FI_State.csv")
 
 #Cleaning on County Data
 year <- 2008
@@ -362,6 +363,7 @@ fi_county <- county |>
              select(`County, State`, Year, `Food Insecurity Rate`) |>
              pivot_wider(names_from = Year,
                          values_from = `Food Insecurity Rate`)
+write.csv(fi_county, "FI_County.csv")
 
 
 #Cleaning on District Data
