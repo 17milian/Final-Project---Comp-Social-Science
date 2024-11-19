@@ -20,6 +20,7 @@ I. Raw Data
   - MMG2019_2017Data_ToShare.xlsx
   - MMG2020_2018Data_ToShare.xlsx
   - MMG2024_2019-2022_Data_ToShare_v3.xlsx
+    
 II. Clean Data
   - MMG_State.csv
   - MMG_County.csv
@@ -27,6 +28,7 @@ II. Clean Data
   - FI_State.csv
   - FI_County.csv
   - FI_Districts.csv
+    
 III. R-Files
   - Webscrapping_Food_Banks.R (Collect.R)
   - Clean.R
