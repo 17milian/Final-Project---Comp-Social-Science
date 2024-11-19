@@ -44,12 +44,11 @@ if (length(data_list) == 0) {
   stop("No valid data found in the specified sheets!")
 }
 
-data_list[[2]] <- data_list[[2]] |> mutate('%FI Btwn Thresholds' = as.double('%FI Btwn Thresholds'))
-
+data_list[[2]] <- data_list[[2]] |> mutate(`% FI Btwn Thresholds` = as.double(`% FI Btwn Thresholds`))
 
 merged_data <- bind_rows(data_list)
 
-output_file <- "merged_districts_data.csv"
+output_file <- "MMG_Districts.csv"
 write.csv(merged_data, file = output_file, row.names = FALSE)
 
 cat("Data from the specified sheets has been merged and saved to", output_file, "\n")
