@@ -1,9 +1,7 @@
 library(readxl)
 library(dplyr)
 
-folder_path <- "Prototype"  
-
-excel_files <- list.files(path = folder_path, pattern = "\\.xlsx$", full.names = TRUE)
+excel_files <- list.files(pattern = "\\.xlsx$", full.names = TRUE)
 
 sheet_mapping <- list(
   "MMG2011_2009Data_ToShare.xlsx" = "Congressional_district",
@@ -15,7 +13,8 @@ sheet_mapping <- list(
   "MMG2017_2015Data_ToShare.xlsx" = "2015 Cong District",
   "MMG2018_2016Data_ToShare.xlsx" = "2016 Cong District",
   "MMG2019_2017Data_ToShare.xlsx" = "2017 Cong District",
-  "MMG2020_2018Data_ToShare.xlsx" = "2018 Cong District"
+  "MMG2020_2018Data_ToShare.xlsx" = "2018 Cong District",
+  "MMG2024_2019-2022_Data_ToShare_v3.xlsx" = "Congressional District"
 )
 
 data_list <- list() 
