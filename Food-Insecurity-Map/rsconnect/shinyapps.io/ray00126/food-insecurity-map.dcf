@@ -1,0 +1,10 @@
+name: food-insecurity-map
+title:
+username: ray00126
+account: ray00126
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 13408607
+bundleId: 9395025
+url: https://ray00126.shinyapps.io/food-insecurity-map/
+version: 1

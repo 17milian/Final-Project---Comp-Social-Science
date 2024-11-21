@@ -1,4 +1,5 @@
-#
+#Note to Self: ALWAYS pull changes from github before modifying and push AFTER modifying
+#WebApp link: https://ray00126.shinyapps.io/food-insecurity-map/
 # This is a Shiny web application. You can run the application by clicking
 # the 'Run App' button above.
 #
@@ -12,11 +13,9 @@ library(usmap)
 library(ggplot2)
 library(dplyr)
 library(tidycensus)
-library(highcharter)
+library(rsconnect)
 
 state_data <- read.csv("states_FI_graph.csv")
-states_F <- read.csv("../FI_State.csv")
-colnames(states_F)[2] <- "state"
 county_data <- read.csv("counties_FI_graph.csv")
 ui <- fluidPage(
   sidebarLayout(
