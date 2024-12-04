@@ -2,7 +2,7 @@ library(readxl)
 library(tidyverse)
 
 
-files <- list.files(pattern="\\.xlsx$",full.names = TRUE)
+files <- list.files(path="./Raw Data",pattern="\\.xlsx$",full.names = TRUE)
 
 #Cleaning on State Data
 year <- 2008
@@ -367,8 +367,6 @@ write.csv(fi_county, "FI_County.csv", row.names = FALSE)
 
 
 #Cleaning on District Data
-
-#excel_files <- list.files(pattern = "\\.xlsx$", full.names = TRUE)
 sheet_mapping <- list(
   "MMG2011_2009Data_ToShare.xlsx" = "Congressional_district",
   "MMG2012_2010Data_ToShare.xlsx" = "Congressional District",
