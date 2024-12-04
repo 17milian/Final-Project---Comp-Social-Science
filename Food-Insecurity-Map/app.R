@@ -14,11 +14,16 @@ library(sf)
 
 # Read and preprocess the data
 state_data <- read.csv("states_FI_graph.csv")
-states <- read_sf('cb_2019_us_state_5m.shp')
-
+states <- read_sf("cb_2019_us_state_5m.shp")
+district_data <- read.csv("FI_Districts.csv")
+districts <- read_sf("districts.shp")
 if (!all(is.element(state_data$state, states$NAME))) {
   stop("Some states in state_data are not present in the shapefile.")
 }
+
+#id = str_remove(id, "^0+")
+#merged_districts <- merge(districts, district_data,)
+
 
 states <- merge(states, state_data, by.x = 'NAME', by.y = 'state', all.x = FALSE)
 
@@ -57,7 +62,10 @@ server <- function(input, output, session) {
     )
     return(states)
   })
-  
+  reactivedistricts <- reactive({
+    yearColumn <- input$selectedYear
+    
+  })
   # Render leaflet map
   output$foodInsecurityMap <- renderLeaflet({
     leaflet() %>%
