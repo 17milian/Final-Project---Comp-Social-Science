@@ -23,9 +23,9 @@ if (!all(is.element(state_data$state, states$NAME))) {
   stop("Some states in state_data are not present in the shapefile.")
 }
 
-fi_state <- read.csv("../Analysis/Analysis_State.csv")
-fi_county <- read.csv("../Analysis/Analysis_County.csv")
-fi_districts <- read.csv("../Analysis/Analysis_District.csv")
+fi_state <- read.csv("Analysis/Analysis_State.csv")
+fi_county <- read.csv("Analysis/Analysis_County.csv")
+fi_districts <- read.csv("Analysis/Analysis_District.csv")
 
 #id = str_remove(id, "^0+")
 #merged_districts <- merge(districts, district_data,)

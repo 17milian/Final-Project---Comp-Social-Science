@@ -34,9 +34,9 @@ fi_state <- fi_state |>
     names_to = "year",
     values_to = "fi")
 
-write.csv(fi_state, file = "./Analysis/Analysis_State.csv")
+write.csv(fi_state, file = "Analysis_State.csv")
 
-fi_state <- read.csv("./Analysis/Analysis_State.csv")
+fi_state <- read.csv("Analysis_State.csv")
 
 state_plot <- function(nams) {
   fi_state <- fi_state |> filter(state %in% nams)
@@ -123,9 +123,9 @@ fi_county <- fi_county |>
     names_to = "year",
     values_to = "fi")
 
-write.csv(fi_county, file = "./Analysis/Analysis_County.csv")
+write.csv(fi_county, file = "Analysis_County.csv")
 
-fi_county <- read.csv("./Analysis/Analysis_County.csv")
+fi_county <- read.csv("Analysis_County.csv")
 
 county_plot <- function(nams) {
    fi_county <- fi_county |> filter(county %in% nams)
@@ -226,9 +226,9 @@ fi_districts <- fi_districts |>
     names_to = "year",
     values_to = "fi")
 
-write.csv(fi_districts, file = "./Analysis/Analysis_District.csv")
+write.csv(fi_districts, file = "Analysis_District.csv")
 
-fi_districts <- read.csv("./Analysis/Analysis_District.csv")
+fi_districts <- read.csv("Analysis_District.csv")
 
 
 district_plot <- function(nams) {
@@ -301,3 +301,4 @@ district_plot <- function(nams) {
 #district_plot("Congressional District 1, Alabama")
 #district_plot(c("Congressional District 1, Alabama",
                 #"Congressional District 2, Alabama"))
+

@@ -14,118 +14,284 @@ library(plotly)
 library(tidyverse)
 library(sf)
 library(cdlTools)
+library(shinyWidgets)
 
-# Read and preprocess the data
-state_data <- read.csv("states_FI_graph.csv")
-states <- read_sf("cb_2019_us_state_5m.shp")
-district_data <- read.csv("FI_Districts.csv")
-districts <- read_sf("districts.shp")
-county_data <- read.csv("counties_FI_graph.csv")
-counties <- read_sf("smallCounties.shp")
-if (!all(is.element(state_data$state, states$NAME))) {
-  stop("Some states in state_data are not present in the shapefile.")
-}
-for(i in 1:length(district_data[,1])){
-  if(as.numeric(district_data[i,1]) < 1000){
-    district_data[i,1] <- paste("0", district_data[i,1], sep = "") 
-  }
-  else{
-    district_data[i,1] <- as.character(district_data[i,1])
-  }
-}
-for(i in 1:length(county_data[,19])){
-  if(as.numeric(county_data[i,19]) < 10000){
-    county_data[i,19] <- paste("0", county_data[i,19], sep = "") 
-  }
-  else{
-    county_data[i,19] <- as.character(county_data[i,19])
-  }
-}
-fi_state <- read.csv("Analysis/Analysis_State.csv")
-fi_county <- read.csv("Analysis/Analysis_County.csv")
-fi_districts <- read.csv("Analysis/Analysis_District.csv")
+source("preprocess.R")
 
 
-states <- merge(states, state_data, by.x = 'NAME', by.y = 'state', all.x = FALSE)
-merged_districts <- merge(district_data, districts, by.x = "FIPS", by.y = "GEOID20")
-merged_districts <- st_as_sf(merged_districts)
-merged_counties <- merge(county_data, counties, by.x = "fips", by.y = "FIPS")
-merged_counties <- st_as_sf(merged_counties)
-# Define UI
-ui <- fluidPage(
-  navset_tab(
-    nav_panel("Main",
-              titlePanel("Food Insecurity Map"),
-              sidebarLayout(
-                sidebarPanel(
-                  h4("Instructions"),
-                  p("Hover over a state to view its details."),
-                  p("Select a year to view data for that year."),
-                  selectInput(
-                    inputId = "type",
-                    label = "select map type",
-                    choices = setNames(c("State","County","District"),c("State","County","District"))
-                  ),
-                  selectInput(
-                    inputId = "selectedYear",
-                    label = "Select Year",
-                    choices = setNames(paste0("X", 2009:2022), 2009:2022),  # Display years as plain numbers
-                    selected = "X2009"  # Default selection
-                  ),
-                  conditionalPanel(condition = "input.type !== 'State'",
-                                   selectInput(
-                                     inputId = "selectedState",
-                                     label = "Select State",
-                                     choices = setNames(
-                                       c("01", "02", "04", "05", "06", "08", "09", "10", "11", "12", "13", "15", "16", "17",
-                                         "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31",
-                                         "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "44", "45", "46",
-                                         "47", "48", "49", "50", "51", "53", "54", "55", "56", "72"),
-                                       c("Alabama", "Alaska", "Arizona", "Arkansas",
-                                         "California", "Colorado", "Connecticut", "Delaware", "District of Columbia",
-                                         "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas",
-                                         "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
-                                         "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", 
-                                         "New Jersey", "New Mexico", "New York", "North Carolina","North Dakota",
-                                         "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
-                                         "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
-                                         "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming", "Puerto Rico")
-                                     )
-                                   )
-                  )
+
+ui <- page_fluid(
+  # Enhanced light theme with vibrant colors
+  theme = bs_theme(
+    version = 5,
+    bootswatch = "litera",     # Clean, modern light theme
+    bg = "#ffffff",            # White background
+    fg = "#333333",            # Dark gray text
+    primary = "#4361ee",       # Vibrant blue
+    secondary = "#3f37c9",     # Deep purple
+    success = "#4cc9f0",       # Bright cyan
+    info = "#4895ef",          # Sky blue
+    warning = "#f72585",       # Hot pink
+    danger = "#ff6b6b",        # Coral red
+    base_font = "Segoe UI",     # Modern, friendly font
+    "enable-shadows" = TRUE,
+    "card-bg" = "#ffffff"      # White card background
+  ),
+  
+  # Header with background image
+  card(
+    class = "my-3",
+    card_header(
+      div(
+        style = "position: relative; 
+           text-align: center; 
+           color: white; 
+           padding: 37.5px;  # Increased from 18.75px to 37.5px (1.5x)
+           box-shadow: 0 4px 8px rgba(0,0,0,0.3); 
+           overflow: hidden;",
+        div(
+          style = "position: absolute; 
+             top: 0; 
+             left: 0; 
+             width: 100%; 
+             height: 100%; 
+             background-image: url('https://preventioncentre.org.au/wp-content/uploads/2021/10/Food-chequerboard_shutterstock_183253421-900x600.jpg'); 
+             background-size: 75%; 
+             background-position: center; 
+             opacity: 0.75;
+             z-index: 0;"
+        ),
+        div(
+          style = "position: relative; z-index: 1;",
+          h1("Food Insecurity Across the USA", 
+             style = "font-size: 3.15em; font-weight: 700; margin: 0;  # Increased from 2.1em to 3.15em (1.5x)
+               text-shadow: 2px 2px 4px rgba(0,0,0,0.5);"),
+          p("by Carlos, Allison, Tridib, and Kavya",
+            style = "font-size: 1.35em; margin-top: 11.25px; opacity: 1.0;")  # Increased from 0.9em to 1.35em (1.5x)
+        )
+      )
+    )
+  ),
+  
+  # Main content
+  navset_card_tab(
+    id = "main_tabs",
+    header = "Interactive Dashboard",
+    height = "100%",
+    selected = "Map View",
+    nav_panel(
+      title = "Map View",
+      icon = icon("map"),
+      layout_sidebar(
+        sidebar = sidebar(
+          title = span(icon("gears"), "Control Panel"),
+          bg = "#ffffff",
+          fg = "#333333",
+          border = TRUE,
+          width = 350,
+          
+          # Instructions card
+          card(
+            class = "mb-3",
+            card_header(
+              style = "background: linear-gradient(90deg, #4361ee, #3f37c9);",
+              class = "text-white",
+              div(
+                style = "display: flex; align-items: center; gap: 10px;",
+                icon("info-circle"), 
+                span("Instructions", style = "font-weight: 600;")
+              )
+            ),
+            card_body(
+              style = "background-color: #f0f2ff;",  # Light blue-tinted background
+              div(
+                style = "display: flex; flex-direction: column; gap: 12px;",
+                div(
+                  style = "display: flex; align-items: center; gap: 10px;",
+                  icon("mouse-pointer", style = "color: #4361ee;"), 
+                  span("Hover over a state for details", 
+                       style = "color: #333333; font-size: 1rem;")
                 ),
-                mainPanel(
-                  leafletOutput("foodInsecurityMap", height = 600)
+                div(
+                  style = "display: flex; align-items: center; gap: 10px;",
+                  icon("calendar", style = "color: #4361ee;"), 
+                  span("Select year from the dropdown",
+                       style = "color: #333333; font-size: 1rem;")
                 )
               )
-    ),
-    nav_panel("Analysis",
-              titlePanel("Food Insecurity Rate Trends"),
-              sidebarLayout(
-                sidebarPanel(
-                  h4("Instructions"),
-                  p("Select a geographic level to view further selection."),
-                  radioButtons(
-                    inputId = "geographic_level",
-                    label = "Select Level",
-                    choices = c("State", "County", "District"),
-                    selected = "State"
-                  ),
-                  p("Select an area within that level to view trends."),
-                  selectizeInput(
-                    inputId = "names",
-                    label = "Select Area",
-                    choices = " ",
-                    multiple = TRUE,
-                    options = list(maxItems = 2)
-                  )
+            )
+          ),
+          
+          # Controls card
+          card(
+            class = "mb-3",
+            card_header(
+              style = "background: linear-gradient(90deg, #4cc9f0, #4895ef);",
+              class = "text-white",
+              div(
+                style = "display: flex; align-items: center; gap: 10px;",
+                icon("sliders"), 
+                span("Map Controls", style = "font-weight: 600;")
+              )
+            ),
+            card_body(
+              style = "background-color: #f0fbff;",
+              selectInput(
+                inputId = "type",
+                label = tags$span(
+                  icon("map-marked"), 
+                  "Select Map Type",
+                  style = "color: #333333;"
                 ),
-                mainPanel(
-                  plotlyOutput(outputId = "trendLine")
+                choices = setNames(c("State","County","District"),
+                                   c("State","County","District"))
+              ),
+              selectInput(
+                inputId = "selectedYear",
+                label = tags$span(
+                  icon("calendar-alt"), 
+                  "Select Year",
+                  style = "color: #333333;"
+                ),
+                choices = setNames(paste0("X", 2009:2022), 2009:2022),
+                selected = "X2009"
+              ),
+              conditionalPanel(
+                condition = "input.type !== 'State'",
+                selectInput(
+                  inputId = "selectedState",
+                  label = tags$span(
+                    icon("flag-usa"), 
+                    "Select State",
+                    style = "color: #333333;"
+                  ),
+                  choices = setNames(
+                    c("01", "02", "04", "05", "06", "08", "09", "10", "11", "12", 
+                      "13", "15", "16", "17", "18", "19", "20", "21", "22", "23", 
+                      "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", 
+                      "34", "35", "36", "37", "38", "39", "40", "41", "42", "44", 
+                      "45", "46", "47", "48", "49", "50", "51", "53", "54", "55", 
+                      "56", "72"),
+                    c("Alabama", "Alaska", "Arizona", "Arkansas", "California", 
+                      "Colorado", "Connecticut", "Delaware", "District of Columbia",
+                      "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", 
+                      "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", 
+                      "Maine", "Maryland", "Massachusetts", "Michigan", 
+                      "Minnesota", "Mississippi", "Missouri", "Montana", 
+                      "Nebraska", "Nevada", "New Hampshire", "New Jersey", 
+                      "New Mexico", "New York", "North Carolina", "North Dakota",
+                      "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
+                      "South Carolina", "South Dakota", "Tennessee", "Texas", 
+                      "Utah", "Vermont", "Virginia", "Washington", "West Virginia", 
+                      "Wisconsin", "Wyoming", "Puerto Rico")
+                  )
                 )
-              ))
+              )
+            )
+          )
+        ),
+        
+        # Map card
+        card(
+          class = "h-100",
+          card_header(
+            style = "background: linear-gradient(90deg, #4361ee, #4895ef);",
+            class = "text-white",
+            div(
+              style = "display: flex; align-items: center; gap: 10px;",
+              icon("map-location-dot"), 
+              span("Interactive Map", style = "font-weight: 600;")
+            )
+          ),
+          card_body(
+            style = "background-color: #ffffff; padding: 0;",
+            leafletOutput("foodInsecurityMap", height = "700px")
+          )
+        )
+      )
+    ),
+    
+    nav_panel(
+      title = "Analysis",
+      icon = icon("chart-simple"),
+      layout_sidebar(
+        sidebar = sidebar(
+          title = span(icon("microscope"), "Analysis Controls"),
+          bg = "#ffffff",
+          fg = "#333333",
+          border = TRUE,
+          width = 350,
+          
+          card(
+            class = "mb-3",
+            card_header(
+              style = "background: linear-gradient(90deg, #f72585, #ff6b6b);",
+              class = "text-white",
+              div(
+                style = "display: flex; align-items: center; gap: 10px;",
+                icon("filter"), 
+                span("Data Filters", style = "font-weight: 600;")
+              )
+            ),
+            card_body(
+              style = "background-color: #fff0f5;",
+              radioButtons(
+                inputId = "geographic_level",
+                label = tags$span(
+                  icon("layer-group"), 
+                  "Select Level",
+                  style = "color: #333333;"
+                ),
+                choices = c("State", "County", "District"),
+                selected = "State"
+              ),
+              selectizeInput(
+                inputId = "names",
+                label = tags$span(
+                  icon("map-marker-alt"), 
+                  "Select Area",
+                  style = "color: #333333;"
+                ),
+                choices = " ",
+                multiple = TRUE,
+                options = list(maxItems = 2)
+              )
+            )
+          )
+        ),
+        
+        # Analysis card
+        card(
+          class = "h-100",
+          card_header(
+            style = "background: linear-gradient(90deg, #4cc9f0, #4895ef);",
+            class = "text-white",
+            div(
+              style = "display: flex; align-items: center; gap: 10px;",
+              icon("chart-line"), 
+              span("Trend Analysis", style = "font-weight: 600;")
+            )
+          ),
+          card_body(
+            style = "background-color: #ffffff;",
+            plotlyOutput(outputId = "trendLine", height = "700px")
+          )
+        )
+      )
+    )
+  ),
+  
+  # Footer
+  card(
+    class = "mt-3",
+    card_body(
+      style = "background: linear-gradient(90deg, #4361ee, #3f37c9);",
+      class = "text-center text-white",
+      "Food Insecurity Dashboard © 2024"
+    )
   )
 )
+
 
 # Define server logic
 server <- function(input, output, session) {

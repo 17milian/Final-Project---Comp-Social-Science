@@ -17,20 +17,20 @@ library(janitor)
 # Data
 ```{r load data}
 #State
-base <- read.csv("MMG_State.csv") |>
+base1 <- read.csv("../../MMG_State.csv") |>
         clean_names()
 #County
-base <- read.csv("MMG_County.csv") |>
+base2 <- read.csv("../../MMG_County.csv") |>
         clean_names()
 
 #District
-base <- read.csv("MMG_District.csv") |>
+base3 <- read.csv("../../MMG_Districts.csv") |>
         clean_names()
 ```
 
 ```{r clean data}
 #State
-recent <- base |>
+recent <- base1 |>
           select(-23:-30) |>
           mutate(x_fi_low_threshold = ifelse(year %in% 2019:2022, 
                                              x_fi_snap_threshold, 
