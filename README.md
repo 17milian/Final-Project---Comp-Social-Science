@@ -5,7 +5,7 @@ application for data analysis and visualization. The project will include a writ
 presentation.
 
 ## **Project Description:**
-For our project, we will create a map of food banks across America and add an additonal dimension through food insecurity data to visualize the impact of resources on food insecurity geographically. Through our application, we aim to highlight and bring attention to food insecurity that many Americans face to demonstrate the need for food banks, or further resources.
+For our project, we will create a map of food insecurity across America to visualize its impact geographically. Through our application, we aim to highlight food insecurity as one of the modern issues many Americans face.
 
 ## **Table of Contents**:
 I. Raw Data
@@ -21,7 +21,8 @@ I. Raw Data
   - MMG2020_2018Data_ToShare.xlsx
   - MMG2024_2019-2022_Data_ToShare_v3.xlsx
     
-II. Clean Data
+II. Cleaning Data
+  - Clean.R
   - MMG_State.csv
   - MMG_County.csv
   - MMG_Districts.csv
@@ -29,10 +30,17 @@ II. Clean Data
   - FI_County.csv
   - FI_Districts.csv
     
-III. R-Files
-  - Webscrapping_Food_Banks.R (Collect.R)
-  - Clean.R
-  - Prototype.R
+III. Application
+  1. Food-Insecurity-Map
+     - Data Preparation Files (map_cleaning.R)
+     - Prepared Data (state_FI_graph.csv, counties_FI_graph.csv)
+     - Spatial Files (.cpg, .dbf, .prj, .shp, .xml, .shx)
+     - Version Control (Trendline App Demo.R, original_app.R)
+     - app.R
+  2. Analysis
+     - Prepared Data (Analysis_State.csv, Analysis_County.csv, Analysis_District.csv)
+     - Regression (Regression.html, Regression.Rmd)
+     - Trendline (Analysis.R)
 
 ### **Authors:** 
 - Carlos Rodriguez
