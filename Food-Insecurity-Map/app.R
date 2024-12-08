@@ -15,6 +15,7 @@ library(tidyverse)
 library(sf)
 library(cdlTools)
 library(shinyWidgets)
+library(rsconnect)
 
 source("preprocess.R")
 

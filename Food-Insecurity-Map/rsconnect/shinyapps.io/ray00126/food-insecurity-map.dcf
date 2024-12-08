@@ -5,6 +5,6 @@ account: ray00126
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 13408607
-bundleId: 9395025
+bundleId: 9484008
 url: https://ray00126.shinyapps.io/food-insecurity-map/
 version: 1
