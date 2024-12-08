@@ -61,7 +61,7 @@ ui <- fluidPage(
                 sidebarPanel(
                   h4("Instructions"),
                   p("Select a geographic level to view further selection."),
-                  selectInput(
+                  radioButtons(
                     inputId = "geographic_level",
                     label = "Select Level",
                     choices = c("State", "County", "District"),
