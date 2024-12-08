@@ -1,0 +1,225 @@
+```
+---
+title: "Regression Analysis"
+author: Allison Sharr
+date: "December 7, 2024"
+output: html_document
+---
+```
+
+# Set Up
+A list of the libraries required to run through the code whilst conducting analysis.
+```{r libraries}
+library(tidyverse)
+library(janitor)
+```
+
+# Data
+```{r load data}
+#State
+base <- read.csv("MMG_State.csv") |>
+        clean_names()
+#County
+base <- read.csv("MMG_County.csv") |>
+        clean_names()
+
+#District
+base <- read.csv("MMG_District.csv") |>
+        clean_names()
+```
+
+```{r clean data}
+#State
+recent <- base |>
+          select(-23:-30) |>
+          mutate(x_fi_low_threshold = ifelse(year %in% 2019:2022, 
+                                             x_fi_snap_threshold, 
+                                             x_fi_low_threshold),
+                 low_threshold_type = ifelse(year %in% 2019:2022, 
+                                             "SNAP", 
+                                             low_threshold_type),
+                 x_fi_high_threshold = ifelse(year %in% 2019:2022, 
+                                              x_fi_snap_threshold_1, 
+                                              x_fi_high_threshold),
+                 high_threshold_type = ifelse(year %in% 2019:2022, 
+                                              "SNAP", 
+                                              high_threshold_type)) |> 
+          select(-20,-22) |> 
+          select(1:8,20,9:19)
+#County
+#District
+```
+
+```{r}
+model <- lm(data = recent, 
+            food_insecurity_rate ~ state + year + 
+                                   x_of_food_insecure_persons + 
+                                   x_fi_low_threshold + x_fi_high_threshold +
+                                   cost_per_meal + 
+                                   weighted_annual_food_budget_shortfall)
+summary(model)
+```
+
+### Step-Wise Regression
+```{r step-wise regression analysis, echo=FALSE}
+model <- lm(data = recent, 
+            #food_insecurity_rate ~ state) 
+              # R2 = 0.5835
+            #food_insecurity_rate ~ state + year)
+              # R2A = 0.8357
+            #food_insecurity_rate ~ state + year + 
+                                   #x_of_food_insecure_persons) 
+              # R2A = 0.8856
+            #food_insecurity_rate ~ state + year +
+                                   #x_of_food_insecure_persons + 
+                                   #x_fi_low_threshold) 
+              # R2A = 0.8859
+            #food_insecurity_rate ~ state + year +
+                                   #x_of_food_insecure_persons +
+                                   #x_fi_low_threshold + x_fi_high_threshold)
+              # R2A = 0.8857
+            #food_insecurity_rate ~ state + year +
+                                   #x_of_food_insecure_persons +
+                                   #x_fi_low_threshold + x_fi_high_threshold + 
+                                   #cost_per_meal)
+              # R2A = 0.9021
+            food_insecurity_rate ~ state + year +
+                                    x_of_food_insecure_persons +
+                                    x_fi_low_threshold + x_fi_high_threshold + 
+                                    cost_per_meal + 
+                                    weighted_annual_food_budget_shortfall)
+              # R2A = 0.9059
+summary(model)
+```
+
+#Relationship Exploration
+  #state
+  model <- lm(data = recent, 
+              food_insecurity_rate ~ state)
+    #Check Assumptions
+          #QQ Plot
+          ggplot(mapping = aes(sample = model$residuals)) +
+            stat_qq() + 
+            stat_qq_line() +
+            labs(title = "State",
+                 x = "",
+                 y = "Residuals")
+          #Scatter Plot
+          ggplot(mapping = aes(x = model$fitted.values, y = model$residuals)) +
+            geom_point() +
+            geom_hline(yintercept = 0) +
+            labs(title = "State",
+                 x = "Fitted Values",
+                 y = "Residuals")
+      #1. Equal Variance
+      #2. Normality
+      #3. Linearity 
+      #4. Independence
+  #year
+  model <- lm(data = recent, 
+              food_insecurity_rate ~ year)
+    #Check Assumptions
+          #QQ Plot
+          ggplot(mapping = aes(sample = model$residuals)) +
+            stat_qq() + 
+            stat_qq_line() +
+            labs(title = "State",
+                 x = "",
+                 y = "Residuals")
+          #Scatter Plot
+          ggplot(mapping = aes(x = model$fitted.values, y = model$residuals)) + 
+            geom_point() +
+            geom_hline(yintercept = 0) +
+            labs(title = "Year",
+                 x = "Fitted Values",
+                 y = "Residuals")
+  #x_of_food_insecure_persons
+  model <- lm(data = recent, 
+              food_insecurity_rate ~ x_of_food_insecure_persons) 
+    #Check Assumptions
+            #QQ Plot
+            ggplot(mapping = aes(sample = model$residuals)) +
+              stat_qq() + 
+              stat_qq_line() +
+              labs(title = "State",
+                   x = "",
+                   y = "Residuals")
+            #Scatter Plot
+            ggplot(mapping = aes(x = model$fitted.values, y = model$residuals)) + 
+              geom_point() +
+              geom_hline(yintercept = 0) +
+              labs(title = "Number of Food Insecure Persons",
+                   x = "Fitted Values",
+                   y = "Residuals")
+  #x_fi_low_threshold
+  model <- lm(data = recent, 
+              food_insecurity_rate ~ x_fi_low_threshold)
+    #Check Assumptions
+          #QQ Plot
+          ggplot(mapping = aes(sample = model$residuals)) +
+            stat_qq() + 
+            stat_qq_line() +
+            labs(title = "State",
+                 x = "",
+                 y = "Residuals")
+          #Scatter Plot
+          ggplot(mapping = aes(x = model$fitted.values, y = model$residuals)) + 
+            geom_point() +
+            geom_hline(yintercept = 0) +
+            labs(title = "FI Low Threshold",
+                 x = "Fitted Values",
+                 y = "Residuals")
+  #x_fi_high_threshold
+  model <- lm(data = recent, 
+              food_insecurity_rate ~ x_fi_high_threshold)
+    #Check Assumptions
+          #QQ Plot
+          ggplot(mapping = aes(sample = model$residuals)) +
+            stat_qq() + 
+            stat_qq_line() +
+            labs(title = "State",
+                 x = "",
+                 y = "Residuals")
+          #Scatter Plot
+          ggplot(mapping = aes(x = model$fitted.values, y = model$residuals)) + 
+            geom_point() +
+            geom_hline(yintercept = 0) +
+            labs(title = "FI High Threshold",
+                 x = "Fitted Values",
+                 y = "Residuals")
+  #cost_per_meal
+  model <- lm(data = recent, 
+              food_insecurity_rate ~ cost_per_meal)
+    #Check Assumptions
+          #QQ Plot
+          ggplot(mapping = aes(sample = model$residuals)) +
+            stat_qq() + 
+            stat_qq_line() +
+            labs(title = "State",
+                 x = "",
+                 y = "Residuals")
+          #Scatter Plot
+          ggplot(mapping = aes(x = model$fitted.values, y = model$residuals)) + 
+            geom_point() +
+            geom_hline(yintercept = 0) +
+            labs(title = "Cost per Meal",
+                 x = "Fitted Values",
+                 y = "Residuals")
+  #weighted_annual_food_budget_shortfall
+  model <- lm(data = recent, 
+              food_insecurity_rate ~ weighted_annual_food_budget_shortfall)
+    #Check Assumptions
+          #QQ Plot
+          ggplot(mapping = aes(sample = model$residuals)) +
+            stat_qq() + 
+            stat_qq_line() +
+            labs(title = "State",
+                 x = "",
+                 y = "Residuals")
+          #Scatter Plot
+          ggplot(mapping = aes(x = model$fitted.values, y = model$residuals)) + 
+            geom_point() +
+            geom_hline(yintercept = 0) +
+            labs(title = "Weighted Annual Food Budget Shortfall",
+                 x = "Fitted Values",
+                 y = "Residuals")

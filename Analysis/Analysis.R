@@ -1,5 +1,7 @@
 library(tidyverse)
+library(janitor)
 library(plotly)
+
 
 #Placeholder Visualizations
 
@@ -13,26 +15,31 @@ library(plotly)
 
 
 ## State
-state_plot <- function(nams) {
-  fi_state <- read.csv("FI_State.csv") 
-  
-  for (col in colnames(fi_state)) {
-    if(col == "State.Name") {
-      fi_state <- fi_state |>
-                  rename(state = col)
-    } else {
-      new <- str_remove(col, "X")
-      fi_state <- fi_state |>
-                  rename_with(~ new[which(col == .x)], .cols = col)
-    }
+fi_state <- read.csv("FI_State.csv") 
+
+for (col in colnames(fi_state)) {
+  if(col == "State.Name") {
+    fi_state <- fi_state |>
+      rename(state = col)
+  } else {
+    new <- str_remove(col, "X")
+    fi_state <- fi_state |>
+      rename_with(~ new[which(col == .x)], .cols = col)
   }
-  
-  fi_state <- fi_state |> 
-              pivot_longer(
-                cols = !state,
-                names_to = "year",
-                values_to = "fi") |>
-              filter(state %in% nams)
+}
+
+fi_state <- fi_state |> 
+  pivot_longer(
+    cols = !state,
+    names_to = "year",
+    values_to = "fi")
+
+write.csv(fi_state, file = "./Analysis/Analysis_State.csv")
+
+fi_state <- read.csv("./Analysis/Analysis_State.csv")
+
+state_plot <- function(nams) {
+  fi_state <- fi_state |> filter(state %in% nams)
   
   if(length(nams) > 1) {
     colors <- c("maroon","red")
@@ -92,7 +99,7 @@ state_plot <- function(nams) {
   
 }
 
-#state_plot("Alaska")
+state_plot("Alaska")
 #state_plot(c("Alaska","Alabama"))
 
 ## County
@@ -282,6 +289,4 @@ district_plot <- function(nams) {
 
 #district_plot("Congressional District 1, Alabama")
 #district_plot(c("Congressional District 1, Alabama",
-                "Congressional District 2, Alabama"))
-
-#Linear Regression
+                #"Congressional District 2, Alabama"))
