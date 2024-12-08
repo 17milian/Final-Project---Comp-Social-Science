@@ -99,31 +99,36 @@ state_plot <- function(nams) {
   
 }
 
-state_plot("Alaska")
+#state_plot("Alaska")
 #state_plot(c("Alaska","Alabama"))
 
 ## County
-county_plot <- function(nams) {
-  fi_county <- read.csv("FI_County.csv") |>
-               select(-State)
-  
-  for (col in colnames(fi_county)) {
-    if(col == "County..State") {
-      fi_county <- fi_county |>  
-                   rename(county = "County..State")
-    } else {
-      new <- str_remove(col, "X")
-      fi_county <- fi_county |>
-        rename_with(~ new[which(col == .x)], .cols = col)
-    }
+fi_county <- read.csv("FI_County.csv") |>
+  select(-State)
+
+for (col in colnames(fi_county)) {
+  if(col == "County..State") {
+    fi_county <- fi_county |>  
+      rename(county = "County..State")
+  } else {
+    new <- str_remove(col, "X")
+    fi_county <- fi_county |>
+      rename_with(~ new[which(col == .x)], .cols = col)
   }
-  
-  fi_county <- fi_county |> 
-    pivot_longer(
-      cols = !county,
-      names_to = "year",
-      values_to = "fi") |>
-    filter(county %in% nams)
+}
+
+fi_county <- fi_county |> 
+  pivot_longer(
+    cols = !county,
+    names_to = "year",
+    values_to = "fi")
+
+write.csv(fi_county, file = "./Analysis/Analysis_County.csv")
+
+fi_county <- read.csv("./Analysis/Analysis_County.csv")
+
+county_plot <- function(nams) {
+   fi_county <- fi_county |> filter(county %in% nams)
   
   if(length(nams) > 1) {
     colors <- c("maroon","red")
@@ -192,36 +197,42 @@ county_plot <- function(nams) {
 #county_plot(c("Aleutians East Borough, Alaska", "Aleutians West Census Area, Alaska"))
 
 ## District
-district_plot <- function(nams) {
-  fi_districts <- read.csv("FI_Districts.csv") 
-  districts <- read.csv("MMG_Districts.csv") |>
-               select(FIPS, District) |> 
-               mutate(District = str_remove(District, " \\(.*\\)")) |>
-               filter(!District == "State Rate - Aggregated") |> 
-               distinct(FIPS, .keep_all = TRUE)
-               
-  
-  fi_districts <- fi_districts |>
-                  left_join(districts, by = join_by(FIPS == FIPS)) |>
-                  select(FIPS, District, everything())
-  
-  for (col in colnames(fi_districts)) {
-    if(col == "District") {
-      fi_districts <- fi_districts |>
-        rename(district = col)
-    } else {
-      new <- str_remove(col, "X")
-      fi_districts <- fi_districts |>
-                      rename_with(~ new[which(col == .x)], .cols = col)
-    }
+fi_districts <- read.csv("FI_Districts.csv") 
+districts <- read.csv("MMG_Districts.csv") |>
+  select(FIPS, District) |> 
+  mutate(District = str_remove(District, " \\(.*\\)")) |>
+  filter(!District == "State Rate - Aggregated") |> 
+  distinct(FIPS, .keep_all = TRUE)
+
+
+fi_districts <- fi_districts |>
+  left_join(districts, by = join_by(FIPS == FIPS)) |>
+  select(FIPS, District, everything())
+
+for (col in colnames(fi_districts)) {
+  if(col == "District") {
+    fi_districts <- fi_districts |>
+      rename(district = col)
+  } else {
+    new <- str_remove(col, "X")
+    fi_districts <- fi_districts |>
+      rename_with(~ new[which(col == .x)], .cols = col)
   }
-  
-  fi_districts <- fi_districts |> 
-                  pivot_longer(
-                    cols = !c(district, FIPS),
-                    names_to = "year",
-                    values_to = "fi") |>
-                  filter(district %in% nams)
+}
+
+fi_districts <- fi_districts |> 
+  pivot_longer(
+    cols = !c(district, FIPS),
+    names_to = "year",
+    values_to = "fi")
+
+write.csv(fi_districts, file = "./Analysis/Analysis_District.csv")
+
+fi_districts <- read.csv("./Analysis/Analysis_District.csv")
+
+
+district_plot <- function(nams) {
+  fi_districts <- fi_districts |> filter(district %in% nams)
   
   if(length(nams) > 1) {
     colors <- c("maroon","red")
