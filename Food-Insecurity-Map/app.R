@@ -147,7 +147,7 @@ ui <- page_fluid(
                 choices = setNames(c("State","County","District"),
                                    c("State","County","District"))
               ),
-              selectInput(
+              selectizeInput(
                 inputId = "selectedYear",
                 label = tags$span(
                   icon("calendar-alt"), 
@@ -155,11 +155,12 @@ ui <- page_fluid(
                   style = "color: #333333;"
                 ),
                 choices = setNames(paste0("X", 2009:2022), 2009:2022),
-                selected = "X2009"
+                selected = "X2009",
+                options = list(dropdownParent = 'body')
               ),
               conditionalPanel(
                 condition = "input.type !== 'State'",
-                selectInput(
+                selectizeInput(
                   inputId = "selectedState",
                   label = tags$span(
                     icon("flag-usa"), 
@@ -172,7 +173,8 @@ ui <- page_fluid(
                       "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", 
                       "34", "35", "36", "37", "38", "39", "40", "41", "42", "44", 
                       "45", "46", "47", "48", "49", "50", "51", "53", "54", "55", 
-                      "56", "72"),
+                      "56"
+                      ),
                     c("Alabama", "Alaska", "Arizona", "Arkansas", "California", 
                       "Colorado", "Connecticut", "Delaware", "District of Columbia",
                       "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", 
@@ -184,9 +186,10 @@ ui <- page_fluid(
                       "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
                       "South Carolina", "South Dakota", "Tennessee", "Texas", 
                       "Utah", "Vermont", "Virginia", "Washington", "West Virginia", 
-                      "Wisconsin", "Wyoming", "Puerto Rico")
-                  )
-                )
+                      "Wisconsin", "Wyoming")
+                  ),
+                  options = list(dropdownParent = 'body')
+                ) 
               )
             )
           )
@@ -255,7 +258,7 @@ ui <- page_fluid(
                 ),
                 choices = " ",
                 multiple = TRUE,
-                options = list(maxItems = 2)
+                options = list(maxItems = 2, dropdownParent = 'body')
               )
             )
           )
